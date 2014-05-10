@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	">
+
+  <bean
+	class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+	<property name="jobRegistry" ref="jobRegistry" />
+  </bean>
+ 
+  <bean id="jobRegistry"
+	class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
+
+  <bean id="job1Detail" class="org.springframework.scheduling.quartz.JobDetailBean">
+	<property name="jobClass" value="com.demo.batch.scheduler.Job1LauncherDetails" />
+	<property name="group" value="quartz-batch" />
+	<property name="jobDataAsMap">
+	  <map>
+		<entry key="jobName" value="printHelloJob" />
+		<entry key="jobLocator" value-ref="jobRegistry" />
+		<entry key="jobLauncher" value-ref="job1Launcher" />
+		<entry key="param1" value="mkyong1" />
+		<entry key="param2" value="mkyong2" />
+	  </map>
+	</property>
+  </bean>
+  
+ <!-- run every 5 seconds -->
+  <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<property name="triggers">
+	  <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="job1Detail" />
+		<property name="cronExpression" value="*/2 * * * * ?" />
+	  </bean>
+	</property>
+  </bean>
+  
+</beans>
+	
+	
